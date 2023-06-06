@@ -1,0 +1,16 @@
+{
+    "videos": [
+        {
+            "id": 1,
+            "video": "video--1.mp4",
+            "comments": [],
+            "similar": []
+        },
+        {
+            "id": 2,
+            "video": "video--2.mp4",
+            "comments": [],
+            "similar": []
+        }
+    ]
+}
