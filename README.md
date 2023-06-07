@@ -1,1 +1,3 @@
-"# YubTub" 
+Yubtub is de nieuwe Youtube in simpele vorm! Via Yubtub kan je video’s bekijken en comments plaatsen onder de video (alleen in de front-end), dit wordt live geupdate. Ook zie je bij elke video gerelateerde video’s waar je op kan klikken zodat je nooit hoeft te stoppen met leuke video’s kijken. Yubtub is te gebruiken voor desktop, tablet en mobiel en is natuurlijk voorzien van responsive units, is de HTML semantisch en houd je BEM aan voor de styling. Ook is Yubtub geheel gerendered uit de Javascript. De data.json mag je deze keer zelf maken, probeer een goede structuur te bedenken zodat je alles gemakkelijk in kan laden! Let er ook op dat je zelf een overlay over de video maakt met buttons (deze hoeven geen functionaliteit te hebben). 
+
+De stijl qua thema is Twitch (https://twitch.tv)
