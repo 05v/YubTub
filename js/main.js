@@ -4,7 +4,10 @@ class App {
 
   constructor() {
     this.api = new API("../data/data.json");
-    this.switcher = new Switcher(this);
+
+    this.api.getData().then((data) => {
+      this.switcher = new Switcher(this, data);
+    });
   }
 }
 
@@ -32,33 +35,41 @@ class API {
 
 class Switcher {
   app;
+  data;
   yubtub;
   cleaner;
+  default = 0;
 
-  constructor(app) {
+  constructor(app, data) {
     this.app = app;
-    this.yubtub = new YubTub(this.app);
+    this.data = data.videos[this.default];
+
+    this.yubtub = new YubTub(this.app, this.data);
     this.cleaner = new Cleaner();
   }
 }
 
 class Cleaner {
-  constructor() {}
+  clean(whereToClean) {
+    document.querySelector(whereToClean).innerHTML = "";
+  }
 }
 
 class YubTub {
   app;
+  data;
   header;
   main;
   aside;
   renderer;
 
-  constructor(app) {
+  constructor(app, data) {
     this.app = app;
-    this.header = new Header();
-    this.main = new Main(this);
+    this.data = data;
+
     this.renderer = new Renderer();
-    this.aside = new Aside(this);
+    this.main = new Main(this, this.data);
+    this.aside = new Aside(this, this.data);
   }
 }
 
@@ -68,18 +79,89 @@ class Renderer {
   }
 }
 
-class Header {
-  constructor() {}
-}
-
 class Main {
   yubtub;
+  data;
   comments;
   video;
 
-  constructor(yubtub) {
+  constructor(yubtub, data) {
     this.yubtub = yubtub;
-    this.comments = new Comments(this);
+    this.data = data;
+
+    this.mainElement = document.createElement("main");
+    this.mainElement.classList.add("main");
+    this.yubtub.renderer.render("body", this.mainElement);
+
+    this.sectionElement = document.createElement("section");
+    this.sectionElement.classList.add("yubtub");
+    this.yubtub.renderer.render(".main", this.sectionElement);
+
+    this.videoElement = document.createElement("figure");
+    this.videoElement.classList.add("video");
+    this.yubtub.renderer.render(".yubtub", this.videoElement);
+
+    this.overlaybuttonElement = document.createElement("button");
+    this.overlaybuttonElement.classList =
+      "video__button video__button--star video__button--overlay";
+    this.yubtub.renderer.render(".video", this.overlaybuttonElement);
+
+    this.overlaystarElement = document.createElement("i");
+    this.overlaystarElement.classList = "fa-solid fa-star";
+    this.yubtub.renderer.render(
+      ".video__button--overlay",
+      this.overlaystarElement
+    );
+
+    this.videoplayerElement = document.createElement("video");
+    this.videoplayerElement.src = "../videos/" + this.data.video;
+    this.videoplayerElement.classList = "video__player";
+    this.yubtub.renderer.render(".video", this.videoplayerElement);
+
+    this.videobarElement = document.createElement("div");
+    this.videobarElement.classList = "video__bar";
+    this.yubtub.renderer.render(".video", this.videobarElement);
+
+    this.videodetailsElement = document.createElement("div");
+    this.videodetailsElement.classList = "video__details";
+    this.yubtub.renderer.render(".video__bar", this.videodetailsElement);
+
+    this.uploaderprofileElement = document.createElement("img");
+    this.uploaderprofileElement.src = "/images/profilepicture.webp";
+    this.uploaderprofileElement.alt = "Profile Picture";
+    this.uploaderprofileElement.classList = "video__uploader";
+    this.yubtub.renderer.render(".video__details", this.uploaderprofileElement);
+
+    this.titleElement = document.createElement("p");
+    this.titleElement.innerText = this.data.title;
+    this.titleElement.classList = "video__title";
+    this.yubtub.renderer.render(".video__details", this.titleElement);
+
+    this.videocontrolsElement = document.createElement("div");
+    this.videocontrolsElement.classList = "video__controls";
+    this.yubtub.renderer.render(".video__bar", this.videocontrolsElement);
+
+    this.starbuttonElement = document.createElement("button");
+    this.starbuttonElement.classList =
+      "video__button video__button--star video__button--controls";
+    this.yubtub.renderer.render(".video__controls", this.starbuttonElement);
+
+    this.stariconElement = document.createElement("i");
+    this.stariconElement.classList = "fa-solid fa-star";
+    this.yubtub.renderer.render(
+      ".video__button--controls",
+      this.stariconElement
+    );
+
+    const arrowButtonElement = document.createElement("button");
+    arrowButtonElement.classList = "video__button video__button--arrow";
+    this.yubtub.renderer.render(".video__controls", arrowButtonElement);
+
+    const arrowIconElement = document.createElement("i");
+    arrowIconElement.classList = "fa-solid fa-right-long";
+    this.yubtub.renderer.render(".video__button--arrow", arrowIconElement);
+
+    this.comments = new Comments(this, data);
     this.video = new Video();
   }
 }
@@ -90,11 +172,56 @@ class Video {
 
 class Comments {
   main;
+  data;
   comment;
 
-  constructor(main) {
+  constructor(main, data) {
     this.main = main;
+    this.data = data;
     this.comment = new Comment(this.main);
+
+    this.commentsSection = document.createElement("ul");
+    this.commentsSection.classList = "comments";
+
+    this.comments = this.data.comments;
+    this.comments.forEach((commentText) => {
+      this.commentElement = document.createElement("li");
+      this.commentElement.classList = "comments__comment";
+
+      this.profileImageElement = document.createElement("img");
+      this.profileImageElement.src = "/images/profilepicture.webp";
+      this.profileImageElement.alt = "Profile Picture";
+      this.profileImageElement.classList = "comments__uploader";
+      this.commentElement.appendChild(this.profileImageElement);
+
+      this.commentTextElement = document.createTextNode(commentText);
+      this.commentElement.appendChild(this.commentTextElement);
+
+      this.commentsSection.appendChild(this.commentElement);
+    });
+
+    this.addCommentElement = document.createElement("li");
+    this.addCommentElement.classList =
+      "comments__comment comments__comment--add";
+
+    this.inputElement = document.createElement("input");
+    this.inputElement.type = "text";
+    this.inputElement.placeholder = "Add a comment";
+    this.inputElement.classList = "comments__input";
+    this.addCommentElement.appendChild(this.inputElement);
+
+    this.buttonElement = document.createElement("button");
+    this.buttonElement.type = "button";
+    this.buttonElement.classList = "comments__button";
+
+    this.iconElement = document.createElement("i");
+    this.iconElement.classList = "fa-solid fa-paper-plane";
+    this.buttonElement.appendChild(this.iconElement);
+
+    this.addCommentElement.appendChild(this.buttonElement);
+    this.commentsSection.appendChild(this.addCommentElement);
+
+    this.main.yubtub.renderer.render(".yubtub", this.commentsSection);
   }
 }
 
@@ -108,18 +235,19 @@ class Comment {
 
 class Aside {
   yubtub;
+  data;
   nextVideo;
+  htmlElement;
 
-  constructor(yubtub) {
+  constructor(yubtub, data) {
     this.yubtub = yubtub;
+    this.data = data;
+    console.log(this.data);
+    this.htmlElement = document.createElement("aside");
+    this.htmlElement.classList = "aside";
+    this.yubtub.renderer.render("main", this.htmlElement);
 
-    this.yubtub.app.api.getData().then((data) => {
-      this.data = data.videos[1].video;
-      this.nextVideo = new NextVideo(this, this.data);
-    });
-
-    const htmlElement = document.createElement("aside");
-    this.yubtub.renderer.render("body", htmlElement);
+    this.nextVideo = new NextVideo(this, data);
   }
 }
 
@@ -131,12 +259,14 @@ class NextVideo {
     this.aside = aside;
     this.data = data;
 
-    this.htmlElement = document.createElement("video");
-    console.log(this.htmlElement);
-    this.htmlElement.src = "../videos/" + this.data;
-    this.aside.yubtub.renderer.render("aside", this.htmlElement);
+    for (let video of this.data.similar) {
+      this.similarVideo = document.createElement("video");
+      this.similarVideo.src = "../videos/" + video;
+      this.similarVideo.classList.add("aside__video");
+      this.aside.yubtub.renderer.render("aside", this.similarVideo);
+    }
   }
 }
 
-yubtub = new App();
-console.log(yubtub);
+const app = new App();
+console.log(app);
