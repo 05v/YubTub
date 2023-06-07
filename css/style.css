@@ -41,6 +41,8 @@ body {
 }
 .video__player {
   width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
 }
 .video__bar {
   background-color: #1f1f23;
@@ -156,6 +158,8 @@ body {
   width: 100%;
   border: 0.4rem solid #535353;
   transition: 0.2s;
+  aspect-ratio: 16/9;
+  object-fit: cover;
 }
 .aside__video:hover {
   border: 0.4rem solid #a970ff;

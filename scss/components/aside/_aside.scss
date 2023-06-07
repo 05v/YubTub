@@ -10,6 +10,8 @@
         width: 100%;
         border: 0.4rem solid variables.$secondary-color;
         transition: 0.2s;
+        aspect-ratio: 16/9;
+        object-fit: cover;
 
         &:hover {
             border: 0.4rem solid variables.$accent-color;

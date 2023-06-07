@@ -116,6 +116,7 @@ class Main {
     this.videoplayerElement = document.createElement("video");
     this.videoplayerElement.src = "../videos/" + this.data.video;
     this.videoplayerElement.classList = "video__player";
+    this.videoplayerElement.controls = true;
     this.yubtub.renderer.render(".video", this.videoplayerElement);
 
     this.videobarElement = document.createElement("div");
@@ -178,7 +179,6 @@ class Comments {
   constructor(main, data) {
     this.main = main;
     this.data = data;
-    this.comment = new Comment(this.main);
 
     this.commentsSection = document.createElement("ul");
     this.commentsSection.classList = "comments";
@@ -200,36 +200,63 @@ class Comments {
       this.commentsSection.appendChild(this.commentElement);
     });
 
-    this.addCommentElement = document.createElement("li");
-    this.addCommentElement.classList =
-      "comments__comment comments__comment--add";
-
-    this.inputElement = document.createElement("input");
-    this.inputElement.type = "text";
-    this.inputElement.placeholder = "Add a comment";
-    this.inputElement.classList = "comments__input";
-    this.addCommentElement.appendChild(this.inputElement);
-
-    this.buttonElement = document.createElement("button");
-    this.buttonElement.type = "button";
-    this.buttonElement.classList = "comments__button";
-
-    this.iconElement = document.createElement("i");
-    this.iconElement.classList = "fa-solid fa-paper-plane";
-    this.buttonElement.appendChild(this.iconElement);
-
-    this.addCommentElement.appendChild(this.buttonElement);
-    this.commentsSection.appendChild(this.addCommentElement);
-
     this.main.yubtub.renderer.render(".yubtub", this.commentsSection);
+
+    this.comment = new Comment(this.main);
   }
 }
 
 class Comment {
-  comments;
+  constructor() {
+    this.commentsList = document.querySelector(".comments");
 
-  constructor(comments) {
-    this.comments = comments;
+    this.inputField = document.createElement("input");
+    this.inputField.type = "text";
+    this.inputField.placeholder = "Add a comment";
+    this.inputField.classList.add("comments__input");
+
+    this.submitButton = document.createElement("button");
+    this.submitButton.type = "button";
+    this.submitButton.classList.add("comments__button");
+
+    const icon = document.createElement("i");
+    icon.classList.add("fa-solid", "fa-paper-plane");
+
+    this.submitButton.appendChild(icon);
+
+    this.commentItem = document.createElement("li");
+    this.commentItem.classList.add(
+      "comments__comment",
+      "comments__comment--add"
+    );
+
+    this.commentItem.appendChild(this.inputField);
+    this.commentItem.appendChild(this.submitButton);
+
+    this.submitButton.addEventListener("click", this.addComment.bind(this));
+
+    this.commentsList.appendChild(this.commentItem);
+  }
+
+  addComment() {
+    const commentText = this.inputField.value;
+
+    if (commentText.trim() !== "") {
+      const newComment = document.createElement("li");
+      newComment.classList.add("comments__comment");
+
+      const profileImg = document.createElement("img");
+      profileImg.src = "/images/profilepicture.webp";
+      profileImg.alt = "Profile Picture";
+      profileImg.classList.add("comments__uploader");
+
+      newComment.appendChild(profileImg);
+      newComment.appendChild(document.createTextNode(commentText));
+
+      this.commentsList.insertBefore(newComment, this.commentItem);
+
+      this.inputField.value = "";
+    }
   }
 }
 
@@ -242,7 +269,6 @@ class Aside {
   constructor(yubtub, data) {
     this.yubtub = yubtub;
     this.data = data;
-    console.log(this.data);
     this.htmlElement = document.createElement("aside");
     this.htmlElement.classList = "aside";
     this.yubtub.renderer.render("main", this.htmlElement);
