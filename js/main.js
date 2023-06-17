@@ -42,10 +42,19 @@ class Switcher {
 
   constructor(app, data) {
     this.app = app;
-    this.data = data.videos[this.default];
+    this.videos = data.videos;
+    this.data = this.videos[this.default];
 
     this.yubtub = new YubTub(this.app, this.data);
     this.cleaner = new Cleaner();
+  }
+
+  updateDefault(newValue) {
+    this.default = newValue;
+    this.data = this.videos[this.default];
+
+    this.cleaner.clean("body");
+    this.yubtub = new YubTub(this.app, this.data);
   }
 }
 
@@ -290,6 +299,11 @@ class NextVideo {
       this.similarVideo.src = "../videos/" + video;
       this.similarVideo.classList.add("aside__video");
       this.aside.yubtub.renderer.render("aside", this.similarVideo);
+
+      this.similarVideo.addEventListener("click", () => {
+        const videoNumber = video.split("--")[1].split(".")[0];
+        this.aside.yubtub.app.switcher.updateDefault(videoNumber - 1);
+      });
     }
   }
 }
